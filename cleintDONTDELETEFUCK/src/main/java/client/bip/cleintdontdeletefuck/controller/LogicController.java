@@ -12,6 +12,7 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 public class LogicController {
@@ -124,6 +125,11 @@ public class LogicController {
                 Cell cell = row.createCell(i);
                 cell.setCellValue(header[i]);
             }
+            List<Trio> trioList = new ArrayList<>();
+            for (int j = 0; j < workload.size(); j++) {
+                trioList.add(new Trio(workload.get(j).getTeacherInLoad(), workload.get(j).getGroupInLoad(),
+                        workload.get(j).getSubjectInLoad()));
+            }
             int cellNum = 1; // номер ячейки с начала таблицы (без учёта шапки)
             for (int i = 0; i < workload.size(); i++) {
                 Row rowTable = sheet.createRow(cellNum);
@@ -132,7 +138,7 @@ public class LogicController {
                 CellStyle myCellStyle = wb.createCellStyle();
                 BorderStyle bs_medium = BorderStyle.THIN;
                 myCellStyle.setBorderTop(bs_medium);
-
+                List<String> subjectsList = trioList.get(0).allTeacherSubjects(workload.get(i).getTeacherInLoad(), trioList);
                 Cell rowNumber = rowTable.createCell(0);
                 rowNumber.setCellValue(i + 1);
                 rowNumber.setCellStyle(myCellStyle);
@@ -154,7 +160,7 @@ public class LogicController {
                 consultations.setCellStyle(myCellStyle);
 
                 Cell exam = rowTable.createCell(5);
-                exam.setCellValue(workload.get(i).getExamHours();
+                exam.setCellValue(workload.get(i).getExamHours());
                 exam.setCellStyle(myCellStyle);
 
                 Cell coursework = rowTable.createCell(6);
@@ -172,24 +178,21 @@ public class LogicController {
                 Cell total = rowTable.createCell(9);
                 total.setCellValue(workload.get(i).getTotal());
                 total.setCellStyle(myCellStyle);
-                List<Trio> trioList = new ArrayList<>();
-                for (int j = 0; i < workload.size(); i++) {
-                    trioList.add(new Trio(workload.get(i).getTeacherInLoad(), workload.get(i).getGroupInLoad(),
-                            workload.get(i).getSubjectInLoad()));
-                }
-                if (workload.get(i).getDisciplines().size() <= 1) {
+                if (subjectsList.size() <= 1) {
                     cellNum++;
                     continue;
                 }
-                String lastTeacher =
-                for (int d = 1; trioList.get(d).teacher.equals(); d++) {
+                for (int d = 1; d < subjectsList.size(); d++) {
                     Row rowDist = sheet.createRow(cellNum + 1);
-                    rowDist.createCell(2).setCellValue(workload.get(i).getDisciplines().get(d));
+                    rowDist.createCell(2).setCellValue(subjectsList.get(d));
                     rowDist.createCell(4).setCellValue(workload.get(i).getFirst_term().get(d));
                     rowDist.createCell(5).setCellValue(workload.get(i).getSecond_term().get(d));
                     rowDist.createCell(6).setCellValue(workload.get(i).getRes_terms().get(d));
                     cellNum++;
                 }
+                trioList.remove(0);
+                teachers.remove(0);
+                subjectsList.clear();
                 cellNum++;
             }
             wb.write(fileOUT);
@@ -224,6 +227,22 @@ public class LogicController {
 
         public boolean checkIfSecondSemester(Trio trio) {
             return this.equals(trio);
+        }
+        public List<String> allTeacherSubjects(String teacher, List<Trio> trio) {
+            List<String> subject = new ArrayList<>();
+            for (int i = 0; i < trio.size(); i++) {
+                if (trio.get(i).teacher.equals(teacher)) {
+                    subject.add(trio.get(i).subject);
+                }
+            }
+            return subject;
+        }
+        public List<String> allTeachers(List<Trio> trio) {
+            HashSet<String> subTeacher = new HashSet<>();
+            for (int i = 0; i < trio.size(); i++) {
+                subTeacher.add(trio.get(i).teacher);
+            }
+            return new ArrayList<>(subTeacher);
         }
     }
 }
