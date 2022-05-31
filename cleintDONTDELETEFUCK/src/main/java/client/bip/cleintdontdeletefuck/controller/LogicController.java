@@ -73,7 +73,6 @@ public class LogicController {
                     semesterFirst = (int) thisRow.getCell(10).getNumericCellValue();
                     semesterSecond = (int) nextRowIfExist.getCell(11).getNumericCellValue();
                     diplom_hours = (int) thisRow.getCell(7).getNumericCellValue();
-                    total = exam + consultations + coursework + semesterFirst + semesterSecond + diplom_hours;
 //            Если нет, берём значения из первой записи, если они есть
                 } else {
                     if (thisRow.getCell(5).getStringCellValue()
@@ -88,10 +87,16 @@ public class LogicController {
                         semesterSecond = (int) thisRow.getCell(11).getNumericCellValue();
                     }
                     diplom_hours = (int) thisRow.getCell(7).getNumericCellValue();
-                    total = exam + consultations + coursework + semesterFirst + semesterSecond + diplom_hours;
                 }
-
-                workload.add(new FinalLoadEntity(teacher, subject, group, exam, diplom_hours, consultations, coursework, semesterFirst, semesterSecond, semesterFirst + semesterSecond, total));
+                for (FinalLoadEntity check : workload) {
+                    if (teacher.equals(check.getTeacherInLoad())) {
+                        check.addAllWhatINeed(subject, group, exam, diplom_hours, consultations, coursework,
+                                semesterFirst, semesterSecond);
+                        break;
+                    }
+                }
+                workload.add(new FinalLoadEntity(teacher, subject, group, exam, diplom_hours, consultations, coursework,
+                        semesterFirst, semesterSecond));
             }
             fileIN.close();
         } catch (Exception e) {
@@ -99,7 +104,7 @@ public class LogicController {
         }
     }
 
-    public static void setValues(String filePath, String sheetName) {
+    public static void setValues(String filePath, String sheetName, String whatIsNeed) {
         try {
             FileInputStream fileIN = new FileInputStream(filePath);
             XSSFWorkbook wb = new XSSFWorkbook(fileIN);
@@ -125,11 +130,6 @@ public class LogicController {
                 Cell cell = row.createCell(i);
                 cell.setCellValue(header[i]);
             }
-            List<Trio> trioList = new ArrayList<>();
-            for (int j = 0; j < workload.size(); j++) {
-                trioList.add(new Trio(workload.get(j).getTeacherInLoad(), workload.get(j).getGroupInLoad(),
-                        workload.get(j).getSubjectInLoad()));
-            }
             int cellNum = 1; // номер ячейки с начала таблицы (без учёта шапки)
             for (int i = 0; i < workload.size(); i++) {
                 Row rowTable = sheet.createRow(cellNum);
@@ -138,7 +138,6 @@ public class LogicController {
                 CellStyle myCellStyle = wb.createCellStyle();
                 BorderStyle bs_medium = BorderStyle.THIN;
                 myCellStyle.setBorderTop(bs_medium);
-                List<String> subjectsList = trioList.get(0).allTeacherSubjects(workload.get(i).getTeacherInLoad(), trioList);
                 Cell rowNumber = rowTable.createCell(0);
                 rowNumber.setCellValue(i + 1);
                 rowNumber.setCellStyle(myCellStyle);
@@ -148,51 +147,71 @@ public class LogicController {
                 initials.setCellStyle(myCellStyle);
 
                 Cell subjects = rowTable.createCell(2);
-                subjects.setCellValue(workload.get(i).getSubjectInLoad());
+                subjects.setCellValue(workload.get(i).getSubjectInLoad().get(0));
                 subjects.setCellStyle(myCellStyle);
 
-                Cell diploma = rowTable.createCell(3);
-                diploma.setCellValue(workload.get(i).getDiplomaHours());
-                diploma.setCellStyle(myCellStyle);
+                if ('1' == whatIsNeed.charAt(0)) {
+                    Cell diploma = rowTable.createCell(3);
+                    diploma.setCellValue(workload.get(i).getDiplomaHours());
+                    diploma.setCellStyle(myCellStyle);
+                }   else {
+                    workload.get(i).setTotal(workload.get(i).getTotal() - workload.get(i).getDiplomaHours());
+                }
 
-                Cell consultations = rowTable.createCell(4);
-                consultations.setCellValue(workload.get(i).getConsultationHours());
-                consultations.setCellStyle(myCellStyle);
+                if ('1' == whatIsNeed.charAt(1)){
+                    Cell consultations = rowTable.createCell(4);
+                    consultations.setCellValue(workload.get(i).getConsultationHours());
+                    consultations.setCellStyle(myCellStyle);
+                }   else {
+                    workload.get(i).setTotal(workload.get(i).getTotal() - workload.get(i).getCourseworkHours());
+                }
 
-                Cell exam = rowTable.createCell(5);
-                exam.setCellValue(workload.get(i).getExamHours());
-                exam.setCellStyle(myCellStyle);
+                if ('1' == whatIsNeed.charAt(2)) {
+                    Cell exam = rowTable.createCell(5);
+                    exam.setCellValue(workload.get(i).getExamHours());
+                    exam.setCellStyle(myCellStyle);
+                } else {
+                    workload.get(i).setTotal(workload.get(i).getTotal() - workload.get(i).getExamHours());
+                }
 
-                Cell coursework = rowTable.createCell(6);
-                coursework.setCellValue(workload.get(i).getCourseworkHours());
-                coursework.setCellStyle(myCellStyle);
+                if ('1' == whatIsNeed.charAt(3)){
+                    Cell coursework = rowTable.createCell(6);
+                    coursework.setCellValue(workload.get(i).getCourseworkHours());
+                    coursework.setCellStyle(myCellStyle);
+                } else {
+                    workload.get(i).setTotal(workload.get(i).getTotal() - workload.get(i).getCourseworkHours());
+                }
 
-                Cell semesterFirst = rowTable.createCell(7);
-                semesterFirst.setCellValue(workload.get(i).getSemesterFirstHours());
-                semesterFirst.setCellStyle(myCellStyle);
+                if ('1' == whatIsNeed.charAt(4)) {
+                    Cell semesterFirst = rowTable.createCell(7);
+                    semesterFirst.setCellValue(workload.get(i).getSemesterFirstHours().get(0));
+                    semesterFirst.setCellStyle(myCellStyle);
+                } else {
+                    workload.get(i).setTotal(workload.get(i).getTotal() - workload.get(i).summOfSemesters(workload.get(i).getSemesterFirstHours()));
+                }
 
-                Cell semesterSecond = rowTable.createCell(8);
-                semesterSecond.setCellValue(workload.get(i).getSemesterSecondHours());
-                semesterSecond.setCellStyle(myCellStyle);
+                if ('1' == whatIsNeed.charAt(5)) {
+                    Cell semesterSecond = rowTable.createCell(8);
+                    semesterSecond.setCellValue(workload.get(i).getSemesterSecondHours().get(0));
+                    semesterSecond.setCellStyle(myCellStyle);
+                }   else {
+                    workload.get(i).setTotal(workload.get(i).getTotal() - workload.get(i).summOfSemesters(workload.get(i).getSemesterSecondHours()));
 
+                }
                 Cell total = rowTable.createCell(9);
                 total.setCellValue(workload.get(i).getTotal());
                 total.setCellStyle(myCellStyle);
-                if (subjectsList.size() <= 1) {
+                if (workload.get(i).getSubjectInLoad().size() <= 1) {
                     cellNum++;
                     continue;
                 }
-                for (int d = 1; d < subjectsList.size(); d++) {
+                for (int d = 1; d < workload.get(i).getSubjectInLoad().size(); d++) {
                     Row rowDist = sheet.createRow(cellNum + 1);
-                    rowDist.createCell(2).setCellValue(subjectsList.get(d));
-                    rowDist.createCell(4).setCellValue(workload.get(i).getFirst_term().get(d));
-                    rowDist.createCell(5).setCellValue(workload.get(i).getSecond_term().get(d));
-                    rowDist.createCell(6).setCellValue(workload.get(i).getRes_terms().get(d));
+                    rowDist.createCell(2).setCellValue(workload.get(i).getSubjectInLoad().get(d));
+                    rowDist.createCell(7).setCellValue(workload.get(i).getSemesterFirstHours().get(d));
+                    rowDist.createCell(8).setCellValue(workload.get(i).getSemesterSecondHours().get(d));
                     cellNum++;
                 }
-                trioList.remove(0);
-                teachers.remove(0);
-                subjectsList.clear();
                 cellNum++;
             }
             wb.write(fileOUT);
@@ -227,22 +246,6 @@ public class LogicController {
 
         public boolean checkIfSecondSemester(Trio trio) {
             return this.equals(trio);
-        }
-        public List<String> allTeacherSubjects(String teacher, List<Trio> trio) {
-            List<String> subject = new ArrayList<>();
-            for (int i = 0; i < trio.size(); i++) {
-                if (trio.get(i).teacher.equals(teacher)) {
-                    subject.add(trio.get(i).subject);
-                }
-            }
-            return subject;
-        }
-        public List<String> allTeachers(List<Trio> trio) {
-            HashSet<String> subTeacher = new HashSet<>();
-            for (int i = 0; i < trio.size(); i++) {
-                subTeacher.add(trio.get(i).teacher);
-            }
-            return new ArrayList<>(subTeacher);
         }
     }
 }
