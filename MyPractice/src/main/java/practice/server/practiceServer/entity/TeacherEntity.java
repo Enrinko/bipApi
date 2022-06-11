@@ -26,8 +26,7 @@ public class TeacherEntity {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "teacherInLoad")
     private List<LoadEntity> teacherInLoad;
 
-
-    public TeacherEntity (Long id, String initials) {
+    public TeacherEntity(Long id, String initials) {
         this.id = id;
         this.initials = initials;
     }

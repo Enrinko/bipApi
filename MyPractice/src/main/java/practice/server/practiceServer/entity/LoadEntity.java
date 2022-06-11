@@ -39,8 +39,7 @@ public class LoadEntity {
     @ManyToOne
     private GroupEntity groupInLoad;
 
-    public LoadEntity(Integer semesterFirstHours, Integer semesterSecondHours, Integer examHours, Integer courseworkHours,
-                     Integer diplomaHours, Integer consultationHours, TeacherEntity initials, SubjectEntity subjectName, GroupEntity groupName) {
+    public LoadEntity(Integer semesterFirstHours, Integer semesterSecondHours, Integer examHours, Integer courseworkHours, Integer diplomaHours, Integer consultationHours, TeacherEntity initials, SubjectEntity subjectName, GroupEntity groupName) {
         this.semesterFirstHours = semesterFirstHours;
         this.semesterSecondHours = semesterSecondHours;
         this.examHours = examHours;

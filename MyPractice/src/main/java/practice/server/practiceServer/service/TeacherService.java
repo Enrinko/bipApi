@@ -38,4 +38,7 @@ public class TeacherService {
         return repo.findById(id).isPresent() ? repo.findById(id).get() : null;
     }
 
+    public void deleteAll() {
+        repo.deleteAll();
+    }
 }

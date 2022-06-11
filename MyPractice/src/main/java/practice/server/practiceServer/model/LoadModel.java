@@ -3,13 +3,6 @@ package practice.server.practiceServer.model;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import practice.server.practiceServer.entity.GroupEntity;
-import practice.server.practiceServer.entity.SubjectEntity;
-import practice.server.practiceServer.entity.TeacherEntity;
-
-import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 
 @Data
 @AllArgsConstructor
@@ -26,9 +19,7 @@ public class LoadModel {
     private String subjectInLoad;
     private String groupInLoad;
 
-
-    public LoadModel(Integer semesterFirstHours, Integer semesterSecondHours, Integer examHours, Integer courseworkHours,
-                     Integer diplomaHours, Integer consultationHours, String initials, String subjectName, String groupName) {
+    public LoadModel(Integer semesterFirstHours, Integer semesterSecondHours, Integer examHours, Integer courseworkHours, Integer diplomaHours, Integer consultationHours, String initials, String subjectName, String groupName) {
         this.semesterFirstHours = semesterFirstHours;
         this.semesterSecondHours = semesterSecondHours;
         this.examHours = examHours;

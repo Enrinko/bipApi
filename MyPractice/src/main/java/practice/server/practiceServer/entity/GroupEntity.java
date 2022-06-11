@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -22,7 +21,6 @@ public class GroupEntity {
     private Long id;
     @NotBlank
     private String groupName;
-
     @NotNull
     @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "groupInLoad")
@@ -31,6 +29,7 @@ public class GroupEntity {
     public GroupEntity(String groupName) {
         this.groupName = groupName;
     }
+
     public GroupEntity(Long id, String groupName) {
         this.id = id;
         this.groupName = groupName;

@@ -2,10 +2,7 @@ package practice.server.practiceServer.response;
 
 import lombok.Getter;
 import lombok.Setter;
-import practice.server.practiceServer.entity.LoadEntity;
 import practice.server.practiceServer.model.LoadModel;
-
-import java.util.List;
 
 @Getter
 @Setter

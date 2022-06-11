@@ -26,7 +26,6 @@ public class SubjectEntity {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "subjectInLoad")
     private List<LoadEntity> subjectInLoad;
 
-
     public SubjectEntity(Long id, String subjectName) {
         this.id = id;
         this.subjectName = subjectName;

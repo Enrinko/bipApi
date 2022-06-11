@@ -4,8 +4,6 @@ import lombok.Getter;
 import lombok.Setter;
 import practice.server.practiceServer.entity.TeacherEntity;
 
-import java.util.List;
-
 @Getter
 @Setter
 public class TeacherResponse extends BaseResponse {

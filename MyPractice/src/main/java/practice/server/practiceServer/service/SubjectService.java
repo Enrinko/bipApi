@@ -30,7 +30,7 @@ public class SubjectService {
         return repo.findAll();
     }
 
-    public SubjectEntity findByName(String name) {
+    public List<SubjectEntity> findByName(String name) {
         return repo.findBySubjectName(name);
     }
 
@@ -38,4 +38,7 @@ public class SubjectService {
         return repo.findById(id).isPresent() ? repo.findById(id).get() : null;
     }
 
+    public void deleteAll() {
+        repo.deleteAll();
+    }
 }

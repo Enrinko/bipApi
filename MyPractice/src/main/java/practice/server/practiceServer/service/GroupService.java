@@ -35,6 +35,10 @@ public class GroupService {
     }
 
     public GroupEntity getById(Long id) {
-        return repo.findById(id).isPresent()? repo.findById(id).get() : null;
+        return repo.findById(id).isPresent() ? repo.findById(id).get() : null;
+    }
+
+    public void deleteAll() {
+        repo.deleteAll();
     }
 }

@@ -1,5 +1,7 @@
 package practice.server.practiceServer.repo;
 
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import practice.server.practiceServer.entity.GroupEntity;
 
@@ -14,6 +16,10 @@ public interface GroupRepo extends CrudRepository<GroupEntity, Long> {
     List<GroupEntity> findAll();
 
     GroupEntity findByGroupName(String groupName);
+
+    @Modifying
+    @Query(value = "truncate table groups", nativeQuery = true)
+    void truncateMyTable();
 }
 
 class GroupRepoReworked implements GroupRepo {
@@ -48,6 +54,10 @@ class GroupRepoReworked implements GroupRepo {
     }
 
     @Override
+    public void truncateMyTable() {
+    }
+
+    @Override
     public Iterable<GroupEntity> findAllById(Iterable<Long> longs) {
         return null;
     }
@@ -59,26 +69,21 @@ class GroupRepoReworked implements GroupRepo {
 
     @Override
     public void deleteById(Long aLong) {
-
     }
 
     @Override
     public void delete(GroupEntity entity) {
-
     }
 
     @Override
     public void deleteAllById(Iterable<? extends Long> longs) {
-
     }
 
     @Override
     public void deleteAll(Iterable<? extends GroupEntity> entities) {
-
     }
 
     @Override
     public void deleteAll() {
-
     }
 }

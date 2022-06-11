@@ -3,6 +3,7 @@ package practice.server.practiceServer.service;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import practice.server.practiceServer.entity.LoadEntity;
 import practice.server.practiceServer.repo.LoadRepo;
 
@@ -62,5 +63,10 @@ public class LoadService {
         summs.add(diploma);
         summs.add(consultations);
         return summs;
+    }
+
+    @Transactional
+    public void truncateMyTable() {
+        repo.truncateMyTable();
     }
 }

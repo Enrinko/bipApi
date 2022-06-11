@@ -1,7 +1,8 @@
 package practice.server.practiceServer.repo;
 
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
-import practice.server.practiceServer.entity.GroupEntity;
 import practice.server.practiceServer.entity.TeacherEntity;
 
 import java.util.List;
@@ -15,7 +16,12 @@ public interface TeacherRepo extends CrudRepository<TeacherEntity, Long> {
     List<TeacherEntity> findAll();
 
     TeacherEntity findByInitials(String initials);
+
+    @Modifying
+    @Query(value = "truncate table teachers", nativeQuery = true)
+    void truncateMyTable();
 }
+
 class TeacherRepoReworked implements TeacherRepo {
     @Override
     public <S extends TeacherEntity> S save(S entity) {
@@ -48,6 +54,10 @@ class TeacherRepoReworked implements TeacherRepo {
     }
 
     @Override
+    public void truncateMyTable() {
+    }
+
+    @Override
     public Iterable<TeacherEntity> findAllById(Iterable<Long> longs) {
         return null;
     }
@@ -59,26 +69,21 @@ class TeacherRepoReworked implements TeacherRepo {
 
     @Override
     public void deleteById(Long aLong) {
-
     }
 
     @Override
     public void delete(TeacherEntity entity) {
-
     }
 
     @Override
     public void deleteAllById(Iterable<? extends Long> longs) {
-
     }
 
     @Override
     public void deleteAll(Iterable<? extends TeacherEntity> entities) {
-
     }
 
     @Override
     public void deleteAll() {
-
     }
 }
