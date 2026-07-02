@@ -1,0 +1,43 @@
+# Build context = ./MyPractice. Keep pom.xml and src/; drop everything else.
+
+.git
+.gitignore
+.gitattributes
+.github
+.idea
+.vscode
+*.log
+.DS_Store
+Thumbs.db
+
+# Secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*credentials*
+
+# Build artifacts (rebuilt inside the image)
+target
+build
+*.class
+*.jar
+*.war
+*.ear
+hs_err_pid*.log
+replay_pid*.log
+
+# Maven wrapper (image uses the maven base image's mvn, not the wrapper)
+.mvn
+mvnw
+mvnw.cmd
+
+# Docs / compose / CI (would only pollute the image context)
+README*.md
+SECURITY*.md
+CONTRIBUTING.md
+Dockerfile*
+.dockerignore
+compose*.yaml
+docker-compose*.yaml

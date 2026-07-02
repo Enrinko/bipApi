@@ -1,0 +1,99 @@
+# compose.yaml — base stack: bipApi server + MySQL.
+# Observability (Prometheus + Grafana) is opt-in behind the `observability` profile:
+#   docker compose --profile observability up --wait
+services:
+  app:
+    image: ${IMAGES_PREFIX:-}bipapi:${IMAGE_TAG:-dev}
+    build:
+      context: ./MyPractice
+      target: runtime
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      MYSQL_HOST: mysql
+      MYSQL_PORT: "3306"
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-bipLoad}
+      MYSQL_USER: ${MYSQL_USER:-bip}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:?set MYSQL_PASSWORD in .env}
+    ports:
+      - "${APP_PORT:-28242}:28242"
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:28242/actuator/health/liveness"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 40s
+    # Hardening: read-only root FS with a small writable tmpfs for Tomcat work dir +
+    # Spring multipart temp files (Excel uploads spill here). Drop all caps, no priv-esc.
+    read_only: true
+    tmpfs:
+      - /tmp:size=256M
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    mem_limit: 768m
+    cpus: "1.5"
+
+  mysql:
+    image: mysql:8.4
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-bipLoad}
+      MYSQL_USER: ${MYSQL_USER:-bip}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:?set MYSQL_PASSWORD in .env}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?set MYSQL_ROOT_PASSWORD in .env}
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      # TCP ping (-h 127.0.0.1) only passes once the real server is up — the init-phase
+      # temp server is socket-only, so this avoids the app connecting too early.
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-u", "root", "--password=$$MYSQL_ROOT_PASSWORD"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    security_opt:
+      - no-new-privileges:true
+
+  prometheus:
+    image: prom/prometheus:v2.54.0
+    profiles: [observability]
+    restart: unless-stopped
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--storage.tsdb.retention.time=15d"
+    volumes:
+      - ./docker/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    ports:
+      - "${PROMETHEUS_PORT:-9090}:9090"
+    security_opt:
+      - no-new-privileges:true
+
+  grafana:
+    image: grafana/grafana:11.1.4
+    profiles: [observability]
+    restart: unless-stopped
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER:-admin}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:?set GRAFANA_ADMIN_PASSWORD in .env}
+      GF_USERS_ALLOW_SIGN_UP: "false"
+      GF_AUTH_ANONYMOUS_ENABLED: "false"
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./docker/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./docker/grafana/dashboards:/var/lib/grafana/dashboards:ro
+    ports:
+      - "${GRAFANA_PORT:-3000}:3000"
+    depends_on: [prometheus]
+    security_opt:
+      - no-new-privileges:true
+
+volumes:
+  mysql_data:
+  prometheus_data:
+  grafana_data:

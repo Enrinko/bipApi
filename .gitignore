@@ -1,0 +1,23 @@
+# --- Secrets: never commit real env files ---
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*credentials*
+
+# --- IDE ---
+.idea/
+*.iml
+*.iws
+*.ipr
+.vscode/
+
+# --- OS ---
+.DS_Store
+Thumbs.db
+
+# --- Build artifacts (module .gitignore also covers these) ---
+target/
+build/
+*.log

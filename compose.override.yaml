@@ -1,0 +1,19 @@
+# compose.override.yaml — dev conveniences, auto-loaded by `docker compose up`.
+# Do NOT put prod settings here; this file is loaded automatically in dev.
+services:
+  mysql:
+    ports:
+      - "${MYSQL_PORT:-3306}:3306" # expose DB for local clients (DBeaver, IntelliJ, etc.)
+
+  adminer:
+    image: adminer:4-standalone
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      ADMINER_DEFAULT_SERVER: mysql
+    ports:
+      - "${ADMINER_PORT:-8081}:8080"
+    security_opt:
+      - no-new-privileges:true

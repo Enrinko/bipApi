@@ -1,0 +1,21 @@
+# compose.prod.yaml — production overrides. Explicitly layered (NOT auto-loaded):
+#   docker compose -f compose.yaml -f compose.prod.yaml up -d
+#
+# In real production, point `app` at a managed MySQL (RDS / Cloud SQL) and delete the
+# mysql service here — running a stateful DB in compose is fine for a demo, not for prod.
+services:
+  app:
+    restart: always
+    environment:
+      # Never auto-create/alter schema against a real database.
+      SPRING_JPA_HIBERNATE_DDL_AUTO: validate
+      SPRING_JPA_SHOW_SQL: "false"
+    deploy:
+      resources:
+        limits:
+          memory: 768m
+        reservations:
+          memory: 384m
+
+  mysql:
+    restart: always
