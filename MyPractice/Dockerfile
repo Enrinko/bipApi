@@ -10,7 +10,7 @@ RUN --mount=type=cache,target=/root/.m2 mvn -B -ntp -q -DskipTests package \
  && java -Djarmode=layertools -jar target/*.jar extract --destination target/layers
 
 #---------- runtime stage ----------
-FROM eclipse-temurin:17-jre-alpine AS runtime
+FROM eclipse-temurin:25-jre-alpine AS runtime
 WORKDIR /app
 RUN addgroup -g 10001 -S app && adduser -u 10001 -S -G app app
 
