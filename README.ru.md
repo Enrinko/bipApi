@@ -7,6 +7,13 @@ REST API для управления учебной нагрузкой — пр�
 
 > **Язык**: Русский · [English](README.md)
 
+## Структура репозитория
+
+- `MyPractice/` — сервер на Spring Boot (этот репозиторий).
+- `client/` — десктопный JavaFX-клиент, подключён как **git-сабмодуль**
+  ([Enrinko/bip-client](https://github.com/Enrinko/bip-client)). Клонируйте с
+  `git clone --recurse-submodules …` или выполните `git submodule update --init` после клонирования.
+
 ## Стек
 
 | Слой | Технология |

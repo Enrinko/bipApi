@@ -7,6 +7,13 @@ records — with XLSX import/export via Apache POI. College practice project.
 
 > **Language**: English · [Русский](README.ru.md)
 
+## Repository layout
+
+- `MyPractice/` — the Spring Boot server (this repo).
+- `client/` — the JavaFX desktop client, included as a **git submodule**
+  ([Enrinko/bip-client](https://github.com/Enrinko/bip-client)). Clone with
+  `git clone --recurse-submodules …`, or run `git submodule update --init` after cloning.
+
 ## Stack
 
 | Layer | Tech |
