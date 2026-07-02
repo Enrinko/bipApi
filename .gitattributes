@@ -1,0 +1,23 @@
+# Normalize line endings: text stored as LF in the repo, checked out native on Windows.
+* text=auto eol=lf
+
+# Scripts that MUST stay LF (break on Linux/CI otherwise)
+mvnw text eol=lf
+*.sh text eol=lf
+
+# Windows scripts stay CRLF
+*.cmd text eol=crlf
+*.bat text eol=crlf
+
+# Binary assets — never touch line endings / never diff
+*.jar binary
+*.war binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.xlsx binary
+*.xls binary
+*.docx binary
+*.pdf binary
