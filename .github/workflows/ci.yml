@@ -15,7 +15,7 @@ concurrency:
 
 jobs:
   build-test:
-    name: Build & test (JDK 17)
+    name: Build & test (JDK 25)
     runs-on: ubuntu-latest
     # The single @SpringBootTest boots the full context, which (ddl-auto=update) opens a
     # real DB connection — so CI needs a MySQL to talk to.
@@ -48,7 +48,7 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: "17"
+          java-version: "25"
           cache: maven
       - name: Build & test (against MySQL service)
         run: |
@@ -72,16 +72,18 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Trivy filesystem scan
-        uses: aquasecurity/trivy-action@0.24.0
+        # Aqua retagged all releases with a leading "v" (v0.24.0, v0.25.0, …) and removed
+        # the bare tags, so "@0.24.0" no longer resolves. Keep the "v".
+        uses: aquasecurity/trivy-action@v0.24.0
         with:
           scan-type: fs
           scan-ref: MyPractice
           severity: CRITICAL,HIGH
           ignore-unfixed: true
-          # exit-code 0 = report-only. This app runs EOL Spring Boot 2.6.7, which carries
-          # known CVEs that are only fixed by upgrading the framework — failing here would
-          # keep CI permanently red. Documented override (see SECURITY.md). Flip to "1"
-          # after moving to a supported Spring Boot line.
+          # exit-code 0 = report-only. Now on supported Spring Boot 4.x, so the framework
+          # CVEs that forced this override are resolved; kept report-only until a trivy run
+          # confirms no unfixable CRITICAL/HIGH remain (e.g. POI), then flip to "1" to gate.
+          # Documented override (see SECURITY.md).
           exit-code: "0"
 
   hadolint:
