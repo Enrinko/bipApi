@@ -45,15 +45,14 @@ Out of scope: DDoS (edge concern), social engineering, physical host access.
 
 | Item | Override | Reason | Recommended fix |
 | --- | --- | --- | --- |
-| Trivy (baseline #12) | `exit-code: 0` (report-only) | Spring Boot **2.6.7 is EOL** and carries CVEs only fixable by upgrading the framework; failing the build would keep CI permanently red. | Upgrade to a supported Spring Boot line, then set `exit-code: 1`. |
-| Runtime freshness (#14 spirit) | Kept Spring Boot **2.6.7** (EOL); bumped Java 18 → **17 LTS** only | Minimal-change hardening of a finished coursework project. Java 18 was EOL; 17 LTS is inside Boot 2.6's supported matrix. | Migrate to Spring Boot 3.x + Java 21 LTS. |
+| Trivy (baseline #12) | `exit-code: 0` (report-only) | Now on a supported **Spring Boot 4.x** line, so the framework CVEs that forced this override are resolved; kept report-only until a Trivy run confirms no unfixable CRITICAL/HIGH remain (e.g. Apache POI). | Confirm the scan is clean, then set `exit-code: 1` to gate the build. |
 | Schema management | `spring.jpa.hibernate.ddl-auto=update` in dev | App relies on Hibernate auto-creating the schema. | `compose.prod.yaml` overrides to `validate`; adopt Flyway migrations. |
 | Actuator exposure | `/actuator/prometheus` unauthenticated | Local-dev observability only. | Restrict by network / add auth before any non-local exposure. |
 | GitHub Actions pinning | Pinned to version tags, not commit SHA | Readability; SHAs can't be hand-verified reliably. | Pin to commit SHA (Dependabot keeps them fresh — already enabled). |
 
 ## Recommended but not implemented
 
-- [ ] Upgrade Spring Boot 2.6.7 → 3.x and Java 17 → 21 (removes most Trivy findings)
+- [x] Migrated Spring Boot 2.6.7 → **4.0.7** and Java 17 → **25 LTS** (removes the EOL-framework Trivy findings)
 - [ ] Flyway migrations; set `ddl-auto=validate` everywhere
 - [ ] TLS with verified server cert for the DB connection (`sslMode=VERIFY_IDENTITY`)
 - [ ] SAST in CI (Semgrep, `p/owasp-top-ten p/java`)
