@@ -97,4 +97,4 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for branch naming, commit format, and PR 
 
 ## License
 
-See [LICENSE](LICENSE) — currently a placeholder; pick a license before publishing.
+Released under the [MIT License](LICENSE).
