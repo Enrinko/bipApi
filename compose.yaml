@@ -57,6 +57,10 @@ services:
       start_period: 30s
     security_opt:
       - no-new-privileges:true
+    # Guardrail: cap MySQL so a runaway query (or a degraded Docker engine) can't
+    # starve the host — mirrors the limits on `app`. Raise if you hit OOM-kills.
+    mem_limit: 1g
+    cpus: "2"
 
   prometheus:
     image: prom/prometheus:v2.54.0
