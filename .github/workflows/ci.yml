@@ -74,7 +74,7 @@ jobs:
       - name: Trivy filesystem scan
         # Aqua retagged all releases with a leading "v" (v0.24.0, v0.25.0, …) and removed
         # the bare tags, so "@0.24.0" no longer resolves. Keep the "v".
-        uses: aquasecurity/trivy-action@v0.24.0
+        uses: aquasecurity/trivy-action@v0.36.0
         with:
           scan-type: fs
           scan-ref: MyPractice
